@@ -1,20 +1,23 @@
+import os
+import csv
+
 def normalize_url(url):
+    url = url.split('/')[-1]
     return url.split('?')[0]
 
 def getDate(item):
     return item['Date']
 
 def journey_aggregate(csv_file, first_item_contain_str):
-
     records = []
-    with open('./logs-11-07-2020_18-07-2020.csv', 'r') as csvfile:
+    with open(csv_file, 'r') as csvfile:
         reader = csv.reader(csvfile, delimiter=';')
         cnt = 0
         for row in reader:
             if (cnt == 0):
                 headers = []
                 for header in row:
-                headers.append(header)
+                    headers.append(header)
             else:
                 record = {}
                 for idx, value in enumerate(row):
@@ -31,7 +34,7 @@ def journey_aggregate(csv_file, first_item_contain_str):
         length = len(person_journey[record['IP Address']])
         
         if (length == 0) :
-            if ('dare-to-dream-vua-nem' in n_url):
+            if (first_item_contain_str in n_url):
                 person_journey[record['IP Address']].append(n_url)
         else:
             if (n_url != person_journey[record['IP Address']][length - 1]):
@@ -70,3 +73,5 @@ def journey_aggregate(csv_file, first_item_contain_str):
         source.append(label_pos[s])
         target.append(label_pos[t])
         value.append(v)
+
+    return source, target, value, label
