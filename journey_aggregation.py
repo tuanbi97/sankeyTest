@@ -3,12 +3,14 @@ import csv
 
 def normalize_url(url):
     url = url.split('/')[-1]
-    return url.split('?')[0]
+    url = url.split('?')[0]
+    if (url == ''): return 'Home'
+    return url
 
 def getDate(item):
     return item['Date']
 
-def journey_aggregate(csv_file, first_item_contain_str):
+def journey_aggregate(csv_file, first_item_contain_str, max_step = 5, main_id = 'IP Address'):
     records = []
     with open(csv_file, 'r') as csvfile:
         reader = csv.reader(csvfile, delimiter=';')
@@ -27,21 +29,20 @@ def journey_aggregate(csv_file, first_item_contain_str):
 
     person_journey = {}
     for record in records:
-        if (record['IP Address'] not in person_journey):
-            person_journey[record['IP Address']] = []
+        if (record[main_id] not in person_journey):
+            person_journey[record[main_id]] = []
         
         n_url = normalize_url(record['MA URL'])
-        length = len(person_journey[record['IP Address']])
+        length = len(person_journey[record[main_id]])
         
         if (length == 0) :
             if (first_item_contain_str in n_url):
-                person_journey[record['IP Address']].append(n_url)
+                person_journey[record[main_id]].append(n_url)
         else:
-            if (n_url != person_journey[record['IP Address']][length - 1]):
-                person_journey[record['IP Address']].append(n_url)
+            if (n_url != person_journey[record[main_id]][length - 1]):
+                person_journey[record[main_id]].append(n_url)
             
     #solution 2
-    max_step = 5
     link_dict = {}
     for step in range(0, max_step):
         for key in person_journey:
